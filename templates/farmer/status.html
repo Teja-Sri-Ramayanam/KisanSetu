@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Track Status - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Bar with Navigation and Home Button -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-diagram-3-fill me-2"></i>Procurement Status Tracker</h3>
+            <p class="text-muted small mb-0">Follow your procurement from digital slot booking to Direct Benefit Transfer (DBT)</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if token %}
+        <div class="card-custom p-4 p-md-5 bg-white shadow mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <div>
+                    <span class="text-muted small">Tracking Token</span>
+                    <h4 class="fw-bold text-success mb-0">{{ token.token_number }}</h4>
+                </div>
+                <div class="text-md-end mt-2 mt-md-0">
+                    <span class="text-muted small d-block">Current Stage</span>
+                    <span class="badge-status {{ token.status|lower }}">{{ token.status }}</span>
+                </div>
+            </div>
+
+            {# Calculate current step index (1 to 6) based on token and payment status #}
+            {# 1: Slot Booked, 2: Token Generated, 3: Waiting, 4: Processing, 5: Procurement Completed, 6: Payment Done #}
+            {% set step_level = 3 %}
+            {% if token.status == 'Booked' %}
+                {% set step_level = 2 %}
+            {% elif token.status == 'Waiting' %}
+                {% set step_level = 3 %}
+            {% elif token.status == 'Processing' %}
+                {% set step_level = 4 %}
+            {% elif token.status == 'Completed' %}
+                {% if token.payment_status == 'Payment Done' %}
+                    {% set step_level = 6 %}
+                {% else %}
+                    {% set step_level = 5 %}
+                {% endif %}
+            {% endif %}
+
+            <!-- 6-Step Progress Tracker Stepper -->
+            <ul class="status-tracker">
+                <!-- Step 1: Slot Booked -->
+                <li class="tracker-step {% if step_level > 1 %}completed{% elif step_level == 1 %}active{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level > 1 %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}
+                    </div>
+                    <div class="tracker-title">1. Slot Booked</div>
+                    <small class="text-muted d-none d-md-block">{{ token.slot_date }}</small>
+                </li>
+
+                <!-- Step 2: Token Generated -->
+                <li class="tracker-step {% if step_level > 2 %}completed{% elif step_level == 2 %}active{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level > 2 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}
+                    </div>
+                    <div class="tracker-title">2. Token Generated</div>
+                    <small class="text-muted d-none d-md-block">{{ token.token_number }}</small>
+                </li>
+
+                <!-- Step 3: Waiting -->
+                <li class="tracker-step {% if step_level > 3 %}completed{% elif step_level == 3 %}active{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level > 3 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}
+                    </div>
+                    <div class="tracker-title">3. Waiting</div>
+                    <small class="text-muted d-none d-md-block">Queue Turn #{{ token.queue_position }}</small>
+                </li>
+
+                <!-- Step 4: Processing -->
+                <li class="tracker-step {% if step_level > 4 %}completed{% elif step_level == 4 %}active{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level > 4 %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}
+                    </div>
+                    <div class="tracker-title">4. Processing</div>
+                    <small class="text-muted d-none d-md-block">Weighing & Quality</small>
+                </li>
+
+                <!-- Step 5: Procurement Completed -->
+                <li class="tracker-step {% if step_level > 5 %}completed{% elif step_level == 5 %}active{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level > 5 %}<i class="bi bi-check-lg"></i>{% else %}5{% endif %}
+                    </div>
+                    <div class="tracker-title">5. Procurement Done</div>
+                    <small class="text-muted d-none d-md-block">Verified by Mandi</small>
+                </li>
+
+                <!-- Step 6: Payment Done -->
+                <li class="tracker-step {% if step_level == 6 %}completed{% else %}pending{% endif %}">
+                    <div class="tracker-icon">
+                        {% if step_level == 6 %}<i class="bi bi-check-lg"></i>{% else %}6{% endif %}
+                    </div>
+                    <div class="tracker-title">6. Payment Done</div>
+                    <small class="text-muted d-none d-md-block">DBT Transferred</small>
+                </li>
+            </ul>
+
+            <!-- Current Stage Details Card -->
+            <div class="alert {% if step_level == 6 %}alert-success{% elif step_level >= 4 %}alert-warning{% else %}alert-info{% endif %} p-4 rounded-3 mt-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="fs-2">
+                        {% if step_level == 6 %}
+                            <i class="bi bi-patch-check-fill text-success"></i>
+                        {% elif step_level == 5 %}
+                            <i class="bi bi-check2-circle text-primary"></i>
+                        {% elif step_level == 4 %}
+                            <i class="bi bi-hourglass-split text-warning"></i>
+                        {% else %}
+                            <i class="bi bi-clock-history text-info"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            {% if step_level == 6 %}
+                                Stage: Procurement Completed & Direct Payment Transferred!
+                            {% elif step_level == 5 %}
+                                Stage: Procurement Completed at Center - Processing Payment
+                            {% elif step_level == 4 %}
+                                Stage: Currently Processing at Procurement Center
+                            {% elif step_level == 3 %}
+                                Stage: Waiting in Queue - Slot Confirmed
+                            {% else %}
+                                Stage: Token Generated
+                            {% endif %}
+                        </h5>
+                        <p class="small mb-0">
+                            {% if step_level == 6 %}
+                                Grain intake has been fully verified and payment of <strong>₹ {{ "{:,.2f}".format(token.payment_amount or 0) }}</strong> has been disbursed to your account.
+                                Transaction Reference: <code>{{ token.transaction_reference }}</code>.
+                            {% elif step_level == 4 %}
+                                The procurement officer at <strong>{{ token.center_name }}</strong> is currently inspecting your crop batch and recording weights.
+                            {% else %}
+                                Your slot is locked for <strong>{{ token.slot_date }} ({{ token.start_time }} - {{ token.end_time }})</strong>.
+                                Current queue position is <strong>#{{ token.queue_position }}</strong>.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <a href="{{ url_for('farmer.token') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-ticket-perforated me-1"></i> View Token
+                </a>
+                <a href="{{ url_for('farmer.payment') }}" class="btn btn-primary-green btn-sm">
+                    <i class="bi bi-cash-stack me-1"></i> Check Payment Status
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-custom p-5 text-center bg-white shadow-sm">
+            <i class="bi bi-diagram-3 display-3 text-muted mb-3"></i>
+            <h4 class="fw-bold">No Active Tracking Record</h4>
+            <p class="text-muted small mb-4">Book a procurement slot first to begin step-by-step progress tracking.</p>
+            <a href="{{ url_for('farmer.schedule') }}" class="btn btn-primary-green">
+                <i class="bi bi-calendar-plus me-1"></i> Book Slot Now
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

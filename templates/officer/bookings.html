@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Center Bookings - Officer | KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Bar with Home Navigation -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-journal-bookmark me-2"></i>Procurement Bookings</h3>
+            <p class="text-muted small mb-0">Center: <strong>{{ center.name if center else 'All' }}</strong></p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('officer.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card-custom p-3 mb-4 bg-white shadow-sm">
+        <form method="GET" action="{{ url_for('officer.bookings') }}" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="date" class="form-label fw-semibold small">Date</label>
+                <input type="date" class="form-control form-control-sm" id="date" name="date" value="{{ selected_date or '' }}">
+            </div>
+            <div class="col-md-4">
+                <label for="status" class="form-label fw-semibold small">Token Status</label>
+                <select class="form-select form-select-sm" id="status" name="status">
+                    <option value="">-- All Statuses --</option>
+                    <option value="Waiting" {% if selected_status == 'Waiting' %}selected{% endif %}>Waiting</option>
+                    <option value="Processing" {% if selected_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-green btn-sm flex-fill">
+                    <i class="bi bi-funnel me-1"></i> Filter Bookings
+                </button>
+                <a href="{{ url_for('officer.bookings') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="card-custom bg-white shadow-sm overflow-hidden">
+        {% if tokens %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Token No.</th>
+                            <th>Farmer Name</th>
+                            <th>Contact / Location</th>
+                            <th>Slot Date & Time</th>
+                            <th>Crop / Est. Qtl</th>
+                            <th>Queue Turn</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th class="text-end pe-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tokens %}
+                            <tr>
+                                <td class="ps-3 font-monospace fw-bold text-success">{{ t.token_number }}</td>
+                                <td class="fw-bold">{{ t.farmer_name }}</td>
+                                <td>
+                                    <div>{{ t.farmer_mobile }}</div>
+                                    <small class="text-muted">{{ t.village or 'N/A' }}, {{ t.district }}</small>
+                                </td>
+                                <td>
+                                    <div>{{ t.slot_date }}</div>
+                                    <small class="text-muted">{{ t.start_time }} - {{ t.end_time }}</small>
+                                </td>
+                                <td>{{ t.crop_type }} ({{ t.estimated_quantity_quintals }} Qtl)</td>
+                                <td><span class="badge bg-light text-dark border">#{{ t.queue_position }}</span></td>
+                                <td><span class="badge-status {{ t.status|lower }}">{{ t.status }}</span></td>
+                                <td>
+                                    <span class="badge {% if t.payment_status == 'Payment Done' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                        {{ t.payment_status or 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    <a href="{{ url_for('officer.processing', token_id=t.id) }}" class="btn btn-outline-primary btn-sm py-1 px-2">
+                                        <i class="bi bi-pencil-square me-1"></i> Process
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                <h6>No Bookings Found</h6>
+                <p class="small mb-0">No bookings match the specified date or status filters.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

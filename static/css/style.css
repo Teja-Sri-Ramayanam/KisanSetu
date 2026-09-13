@@ -1,0 +1,526 @@
+/* ==========================================================================
+   KISAN SETU - Professional Agriculture Platform Stylesheet
+   Color Palette: Deep Green, Light Green, White, Subtle Warm Gold Accent
+   ========================================================================== */
+
+:root {
+    --primary-green: #1b5e20;
+    --medium-green: #2e7d32;
+    --light-green: #4caf50;
+    --pale-green: #e8f5e9;
+    --surface-green: #f1f8f3;
+    --gold-accent: #f59e0b;
+    --gold-light: #fef3c7;
+    --dark-text: #1e293b;
+    --muted-text: #64748b;
+    --light-bg: #f8faf9;
+    --white: #ffffff;
+    --card-shadow: 0 4px 20px rgba(27, 94, 32, 0.08);
+    --hover-shadow: 0 8px 26px rgba(27, 94, 32, 0.15);
+    --radius-lg: 16px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* ==========================================================================
+   NAVBAR & HEADER
+   ========================================================================== */
+.navbar-custom {
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+    padding: 0.75rem 1.5rem;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.navbar-brand .brand-badge {
+    background: var(--gold-accent);
+    color: #1b5e20;
+    font-size: 0.68rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.92) !important;
+    font-weight: 500;
+    padding: 0.5rem 0.9rem !important;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+.nav-link i {
+    margin-right: 4px;
+}
+
+/* Prominent Home Button */
+.btn-home-nav {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.45rem 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-home-nav:hover {
+    background-color: #ffffff;
+    color: var(--primary-green) !important;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn-primary-green {
+    background-color: var(--medium-green);
+    border-color: var(--medium-green);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0.6rem 1.4rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.btn-primary-green:hover, .btn-primary-green:focus {
+    background-color: var(--primary-green);
+    border-color: var(--primary-green);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(27, 94, 32, 0.3);
+}
+
+.btn-outline-green {
+    border: 2px solid var(--medium-green);
+    color: var(--medium-green);
+    font-weight: 600;
+    background: transparent;
+    padding: 0.55rem 1.3rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-green:hover {
+    background-color: var(--medium-green);
+    color: #ffffff;
+}
+
+.btn-gold {
+    background-color: var(--gold-accent);
+    color: #1b5e20;
+    font-weight: 700;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.6rem 1.3rem;
+    transition: all 0.2s;
+}
+
+.btn-gold:hover {
+    background-color: #d97706;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+
+/* ==========================================================================
+   CARDS & SECTIONS
+   ========================================================================== */
+.card-custom {
+    background: var(--white);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card-custom:hover {
+    box-shadow: var(--hover-shadow);
+}
+
+.card-header-green {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    border-bottom: none;
+}
+
+.card-stat {
+    padding: 1.4rem;
+    border-radius: var(--radius-lg);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.card-stat .stat-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.65rem;
+    flex-shrink: 0;
+}
+
+.stat-green {
+    background-color: var(--pale-green);
+    color: var(--primary-green);
+}
+
+.stat-gold {
+    background-color: var(--gold-light);
+    color: #b45309;
+}
+
+.stat-blue {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.stat-purple {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.hero-section {
+    background: linear-gradient(135deg, rgba(27, 94, 32, 0.94) 0%, rgba(46, 125, 50, 0.88) 100%), url('https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+    color: #ffffff;
+    padding: 4.5rem 1.5rem;
+    border-radius: 0 0 32px 32px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 8px 30px rgba(27, 94, 32, 0.15);
+}
+
+.hero-tagline {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fef08a;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.hero-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1.25;
+    margin: 1rem 0;
+}
+
+.hero-desc {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.92);
+    max-width: 680px;
+    margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   ROLE CARDS & SELECTION
+   ========================================================================== */
+.role-card-option {
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+    border-radius: var(--radius-md);
+    padding: 1.1rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: #ffffff;
+    height: 100%;
+}
+
+.role-card-option:hover {
+    border-color: var(--light-green);
+    transform: translateY(-2px);
+}
+
+.role-card-option.active {
+    border-color: var(--medium-green);
+    background-color: var(--pale-green);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+}
+
+.role-icon {
+    font-size: 2.2rem;
+    color: var(--medium-green);
+    margin-bottom: 0.5rem;
+}
+
+/* ==========================================================================
+   DIGITAL TOKEN CARD (PRINT FRIENDLY)
+   ========================================================================== */
+.token-card {
+    background: #ffffff;
+    border: 3px solid var(--medium-green);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(27, 94, 32, 0.12);
+    position: relative;
+    max-width: 620px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.token-header {
+    border-bottom: 2px dashed #cbd5e1;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.token-badge-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--primary-green);
+    background: var(--pale-green);
+    padding: 0.4rem 1.5rem;
+    border-radius: 12px;
+    display: inline-block;
+    letter-spacing: 2px;
+    border: 1px solid #81c784;
+}
+
+.token-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.token-detail-label {
+    font-weight: 600;
+    color: var(--muted-text);
+}
+
+.token-detail-value {
+    font-weight: 700;
+    color: var(--dark-text);
+    text-align: right;
+}
+
+.token-watermark {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    font-size: 8rem;
+    color: rgba(46, 125, 50, 0.05);
+    pointer-events: none;
+}
+
+/* Print CSS */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .token-card, .token-card * {
+        visibility: visible;
+    }
+    .token-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: 100%;
+        border: 2px solid #000;
+        box-shadow: none;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* ==========================================================================
+   STATUS STEPPER WIZARD
+   ========================================================================== */
+.status-tracker {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 2.5rem 0;
+    padding: 0;
+    list-style: none;
+}
+
+.status-tracker::before {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background-color: #e2e8f0;
+    z-index: 1;
+}
+
+.tracker-step {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    flex: 1;
+}
+
+.tracker-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    border: 3px solid #cbd5e1;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.75rem auto;
+    font-size: 1.3rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.tracker-step.completed .tracker-icon {
+    background-color: var(--medium-green);
+    border-color: var(--medium-green);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+}
+
+.tracker-step.active .tracker-icon {
+    background-color: #ffffff;
+    border-color: var(--gold-accent);
+    color: var(--gold-accent);
+    box-shadow: 0 0 0 4px var(--gold-light);
+    animation: pulse-ring 1.8s infinite;
+}
+
+.tracker-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--muted-text);
+}
+
+.tracker-step.completed .tracker-title {
+    color: var(--primary-green);
+}
+
+.tracker-step.active .tracker-title {
+    color: #b45309;
+    font-weight: 700;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   STATUS BADGES
+   ========================================================================== */
+.badge-status {
+    padding: 0.35rem 0.85rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-status.booked {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-status.waiting {
+    background-color: var(--gold-light);
+    color: #92400e;
+}
+
+.badge-status.processing {
+    background-color: #fef08a;
+    color: #854d0e;
+    border: 1px solid #facc15;
+}
+
+.badge-status.completed {
+    background-color: var(--pale-green);
+    color: var(--primary-green);
+    border: 1px solid #86efac;
+}
+
+.badge-status.cancelled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.footer-custom {
+    background-color: #0f3813;
+    color: rgba(255, 255, 255, 0.85);
+    padding: 2.5rem 0 1.5rem;
+    margin-top: 4rem;
+    border-top: 3px solid var(--gold-accent);
+}
+
+.footer-custom a {
+    color: #fef08a;
+    text-decoration: none;
+}
+
+.footer-custom a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================================================
+   MODALS, TOASTS & UTILS
+   ========================================================================== */
+.modal-header-green {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    color: #ffffff;
+}
+
+.modal-header-green .btn-close {
+    filter: invert(1);
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1090;
+}

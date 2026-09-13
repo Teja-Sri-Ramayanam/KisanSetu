@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error | KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card-custom p-5 bg-white shadow">
+                <i class="bi bi-exclamation-triangle-fill text-danger display-1 mb-3"></i>
+                <h1 class="display-5 fw-bold text-danger">500</h1>
+                <h4 class="fw-bold mb-3">Internal Server Error</h4>
+                <p class="text-muted mb-4">
+                    Something went wrong on our servers. Our technical team has been notified. Please return to the home page or try again.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('auth.index') }}" class="btn btn-primary-green px-4">
+                        <i class="bi bi-house-door-fill me-1"></i> Return to HOME
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

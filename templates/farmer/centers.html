@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Procurement Centers - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-geo-alt-fill me-2"></i>Procurement Centers</h3>
+            <p class="text-muted small mb-0">Authorized government agricultural procurement mandis and depots</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('farmer.schedule') }}" class="btn btn-primary-green btn-sm">
+                <i class="bi bi-calendar-plus me-1"></i> Book Slot
+            </a>
+        </div>
+    </div>
+
+    <!-- Center Cards Grid -->
+    <div class="row g-4">
+        {% for c in centers %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card-custom h-100 p-4 bg-white d-flex flex-column shadow-sm">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="stat-icon stat-green">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
+                            {{ c.status }}
+                        </span>
+                    </div>
+
+                    <h5 class="fw-bold text-dark mb-1">{{ c.name }}</h5>
+                    <p class="small text-muted mb-3"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ c.location }}, {{ c.district }}, {{ c.state }}</p>
+
+                    <div class="bg-light p-3 rounded-3 mb-3 small">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted"><i class="bi bi-clock me-1 text-warning"></i>Timings:</span>
+                            <span class="fw-bold">{{ c.opening_time }} - {{ c.closing_time }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted"><i class="bi bi-telephone me-1 text-primary"></i>Helpline:</span>
+                            <span class="fw-bold">{{ c.contact }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted"><i class="bi bi-calendar-check me-1 text-success"></i>Open Slots:</span>
+                            <span class="badge bg-success text-white">{{ c.available_slots }} slots</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-2 d-flex gap-2">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ c.latitude }},{{ c.longitude }}" target="_blank" class="btn btn-outline-secondary btn-sm flex-fill">
+                            <i class="bi bi-compass me-1"></i> Get Directions
+                        </a>
+                        <a href="{{ url_for('farmer.schedule') }}?center_id={{ c.id }}" class="btn btn-primary-green btn-sm flex-fill">
+                            <i class="bi bi-calendar-check me-1"></i> View Slots
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

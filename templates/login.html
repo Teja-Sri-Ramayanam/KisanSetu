@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <!-- Home link banner -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-house-door-fill me-1"></i> HOME
+                </a>
+                <span class="text-muted small">Smart Procurement Portal</span>
+            </div>
+
+            <div class="card-custom p-4 p-md-5 bg-white shadow">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="56" height="56" class="mb-2">
+                    <h3 class="fw-bold text-success mb-1">KISAN SETU</h3>
+                    <p class="text-muted small">Sign in to your digital procurement account</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.login') }}" id="loginForm">
+                    <!-- Role Selection Cards -->
+                    <label class="form-label fw-bold mb-2 text-dark">
+                        <i class="bi bi-person-badge-fill text-success me-1"></i> Select Your Role:
+                    </label>
+                    <input type="hidden" name="role" id="selected_role_input" value="{{ request.args.get('role', role or 'Farmer') }}">
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-4">
+                            <div class="role-card-option {% if (request.args.get('role', role or 'Farmer')) == 'Farmer' %}active{% endif %}" data-role="Farmer">
+                                <i class="bi bi-person-fill text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Farmer</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="role-card-option {% if (request.args.get('role', role or 'Farmer')) == 'Procurement Officer' %}active{% endif %}" data-role="Procurement Officer">
+                                <i class="bi bi-shield-check text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Officer</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="role-card-option {% if (request.args.get('role', role or 'Farmer')) == 'Admin' %}active{% endif %}" data-role="Admin">
+                                <i class="bi bi-sliders text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Admin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@example.com" required autofocus>
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-primary-green w-100 py-2 fs-6 mb-3">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                    </button>
+
+                    <div class="text-center pt-2 border-top">
+                        <p class="small text-muted mb-2">New farmer or officer on Kisan Setu?</p>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-green btn-sm px-4">
+                            <i class="bi bi-person-plus me-1"></i> Create An Account
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Quick Demo Credentials Hint Box -->
+            <div class="card card-body bg-light border-0 shadow-sm mt-3 p-3 text-center small text-muted">
+                <span class="fw-semibold text-dark">Demo logins:</span>
+                <code>farmer@example.com / farmer123</code> &bull; <code>officer@kisansetu.com / officer123</code> &bull; <code>admin@kisansetu.com / admin123</code>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

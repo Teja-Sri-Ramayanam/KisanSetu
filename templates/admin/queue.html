@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Queue Management - Admin | KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Bar with Home Navigation -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-layers-fill me-2"></i>Global Token & Queue Management</h3>
+            <p class="text-muted small mb-0">System-wide monitor and administrative overrides for all mandis</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+            <button class="btn btn-primary-green btn-sm" onclick="window.location.reload()">
+                <i class="bi bi-arrow-clockwise me-1"></i> Refresh Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="card-custom p-3 mb-4 bg-white shadow-sm">
+        <form method="GET" action="{{ url_for('admin.queue') }}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="center_id" class="form-label fw-semibold small">Center</label>
+                <select class="form-select form-select-sm" id="center_id" name="center_id">
+                    <option value="">-- All Procurement Mandis --</option>
+                    {% for c in centers %}
+                        <option value="{{ c.id }}" {% if selected_center == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="status" class="form-label fw-semibold small">Token Status</label>
+                <select class="form-select form-select-sm" id="status" name="status">
+                    <option value="">-- All Statuses --</option>
+                    <option value="Waiting" {% if selected_status == 'Waiting' %}selected{% endif %}>Waiting</option>
+                    <option value="Processing" {% if selected_status == 'Processing' %}selected{% endif %}>Processing</option>
+                    <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-green btn-sm flex-fill">
+                    <i class="bi bi-funnel me-1"></i> Filter
+                </button>
+                <a href="{{ url_for('admin.queue') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Global Queue Table -->
+    <div class="card-custom bg-white shadow-sm overflow-hidden">
+        {% if tokens %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Token No.</th>
+                            <th>Farmer</th>
+                            <th>Center</th>
+                            <th>Date & Time</th>
+                            <th>Load</th>
+                            <th>Queue Turn</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th class="text-end pe-3" style="min-width: 170px;">Admin Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in tokens %}
+                            <tr class="{% if t.status == 'Processing' %}table-warning{% elif t.status == 'Completed' %}table-success-subtle{% endif %}">
+                                <td class="ps-3 font-monospace fw-bold text-success">{{ t.token_number }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ t.farmer_name }}</div>
+                                    <small class="text-muted">{{ t.farmer_mobile }}</small>
+                                </td>
+                                <td>{{ t.center_name }}</td>
+                                <td>
+                                    <div>{{ t.slot_date }}</div>
+                                    <small class="text-muted">{{ t.start_time }} - {{ t.end_time }}</small>
+                                </td>
+                                <td>{{ t.crop_type }} ({{ t.estimated_quantity_quintals }} Qtl)</td>
+                                <td><span class="badge bg-light text-dark border">#{{ t.queue_position }}</span></td>
+                                <td><span class="badge-status {{ t.status|lower }}">{{ t.status }}</span></td>
+                                <td>
+                                    <span class="badge {% if t.payment_status == 'Payment Done' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                        {{ t.payment_status or 'Pending' }}
+                                    </span>
+                                </td>
+                                <td class="text-end pe-3">
+                                    {% if t.status in ['Booked', 'Waiting'] %}
+                                        <form method="POST" action="{{ url_for('admin.update_token_status', token_id=t.id) }}" class="d-inline">
+                                            <input type="hidden" name="status" value="Processing">
+                                            <button type="submit" class="btn btn-warning btn-sm py-1 px-2" title="Advance to Processing">
+                                                <i class="bi bi-play-fill"></i> Processing
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('admin.update_token_status', token_id=t.id) }}" class="d-inline ms-1">
+                                            <input type="hidden" name="status" value="Completed">
+                                            <button type="submit" class="btn btn-success btn-sm py-1 px-2" title="Mark Completed & Done">
+                                                <i class="bi bi-check-circle"></i> Complete
+                                            </button>
+                                        </form>
+                                    {% elif t.status == 'Processing' %}
+                                        <form method="POST" action="{{ url_for('admin.update_token_status', token_id=t.id) }}" class="d-inline">
+                                            <input type="hidden" name="status" value="Completed">
+                                            <button type="submit" class="btn btn-success btn-sm py-1 px-2" title="Mark Completed & Trigger Payment Done">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Mark Completed
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-success small fw-semibold"><i class="bi bi-check2-all"></i> Finalized</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-inbox display-4 mb-2 d-block"></i>
+                <h6>No Tokens Found</h6>
+                <p class="small mb-0">No active or historical tokens match your filter selection.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

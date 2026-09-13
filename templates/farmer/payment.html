@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Status - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Bar with Navigation and Home Button -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h3 class="fw-bold mb-0 text-success"><i class="bi bi-cash-stack me-2"></i>Procurement Payment & DBT</h3>
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.72rem;">Demo Payment System</span>
+            </div>
+            <p class="text-muted small mb-0">Government Direct Benefit Transfer (DBT) MSP Disbursal Status</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Active/Latest Payment Receipt Card -->
+    {% if token and token.payment_amount %}
+        <div class="card-custom p-4 p-md-5 bg-white shadow mb-4 max-w-750 mx-auto border-top border-4 {% if token.payment_status == 'Payment Done' %}border-success{% else %}border-warning{% endif %}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="38" height="38">
+                    <div>
+                        <h5 class="fw-bold text-success mb-0">KISAN SETU DBT RECEIPT</h5>
+                        <small class="text-muted">Direct Benefit Transfer - MSP Procurement</small>
+                    </div>
+                </div>
+                <span class="badge {% if token.payment_status == 'Payment Done' %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2 rounded-pill fw-bold">
+                    {{ token.payment_status }}
+                </span>
+            </div>
+
+            <hr>
+
+            <div class="text-center py-3 bg-light rounded-3 my-3">
+                <span class="text-muted small d-block">Procurement Value (MSP Payable)</span>
+                <h2 class="display-6 fw-bold text-success mb-0">₹ {{ "{:,.2f}".format(token.payment_amount) }}</h2>
+                <span class="small text-muted">Estimated based on {{ token.estimated_quantity_quintals }} Quintals @ MSP Rate</span>
+            </div>
+
+            <div class="row g-3 small">
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Beneficiary Farmer</span>
+                    <span class="fw-bold text-dark fs-6">{{ current_user_name }}</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Digital Token Reference</span>
+                    <span class="fw-bold text-dark font-monospace fs-6">{{ token.token_number }}</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Procurement Center</span>
+                    <span class="fw-bold text-dark">{{ token.center_name }}</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Transaction Reference</span>
+                    {% if token.transaction_reference %}
+                        <span class="fw-bold text-success font-monospace">{{ token.transaction_reference }}</span>
+                    {% else %}
+                        <span class="text-muted fst-italic">Pending procurement completion</span>
+                    {% endif %}
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Procurement Date</span>
+                    <span class="fw-bold text-dark">{{ token.slot_date }}</span>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-muted d-block">Disbursement Date</span>
+                    <span class="fw-bold text-dark">{{ token.paid_at if token.paid_at else 'Awaiting Center Approval' }}</span>
+                </div>
+            </div>
+
+            <div class="alert alert-light border mt-4 mb-0 small text-muted">
+                <i class="bi bi-info-circle-fill text-primary me-1"></i>
+                <strong>Notice:</strong> This is a simulation of the Direct Benefit Transfer system for the hackathon prototype. Real payments are processed directly into Aadhaar-linked farmer bank accounts upon officer verification.
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Payment History Table -->
+    {% if payments %}
+        <div class="card-custom p-4 bg-white shadow-sm">
+            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-clock-history me-2"></i>Payment Disbursal History</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Token Number</th>
+                            <th>Procurement Center</th>
+                            <th>Procurement Date</th>
+                            <th>Amount (₹)</th>
+                            <th>Payment Status</th>
+                            <th>Transaction Ref</th>
+                            <th>Paid Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in payments %}
+                            <tr>
+                                <td class="font-monospace fw-bold text-success">{{ p.token_number }}</td>
+                                <td>{{ p.center_name }}</td>
+                                <td>{{ p.slot_date }}</td>
+                                <td class="fw-bold">₹ {{ "{:,.2f}".format(p.amount) }}</td>
+                                <td>
+                                    <span class="badge {% if p.payment_status == 'Payment Done' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                        {{ p.payment_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <code>{{ p.transaction_reference or 'Pending' }}</code>
+                                </td>
+                                <td>{{ p.paid_at or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-custom p-5 text-center bg-white shadow-sm">
+            <i class="bi bi-cash-stack display-3 text-muted mb-3"></i>
+            <h4 class="fw-bold">No Payment Records Found</h4>
+            <p class="text-muted small">Payment records are generated automatically once you book a procurement slot.</p>
+            <a href="{{ url_for('farmer.schedule') }}" class="btn btn-primary-green">
+                <i class="bi bi-calendar-plus me-1"></i> Book A Slot
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

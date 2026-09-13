@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}KISAN SETU - Smart Procurement Slot & Digital Token Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="hero-section text-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-3">
+                        <i class="bi bi-shield-check me-1"></i> SMART PROCUREMENT INITIATIVE
+                    </span>
+                    <h5 class="hero-tagline mb-2">KISAN SETU</h5>
+                    <h1 class="hero-title display-4">
+                        Book your slot. Get your digital token. Skip the long queue.
+                    </h1>
+                    <p class="hero-desc mx-auto">
+                        Smart Procurement Slot & Digital Token Management System for Farmers. Transparent time slots, guaranteed procurement turn, live queue position tracking, and direct bank transfer updates.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                        {% if not is_logged_in %}
+                            <a href="{{ url_for('auth.register') }}" class="btn btn-gold btn-lg px-4 shadow">
+                                <i class="bi bi-person-plus-fill me-2"></i> Register as Farmer
+                            </a>
+                            <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Portal Login
+                            </a>
+                        {% else %}
+                            {% if current_role == 'Farmer' %}
+                                <a href="{{ url_for('farmer.schedule') }}" class="btn btn-gold btn-lg px-4 shadow">
+                                    <i class="bi bi-calendar-check me-2"></i> Book Procurement Slot
+                                </a>
+                                <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-light btn-lg px-4">
+                                    <i class="bi bi-speedometer2 me-2"></i> Open Dashboard
+                                </a>
+                            {% elif current_role == 'Procurement Officer' %}
+                                <a href="{{ url_for('officer.queue') }}" class="btn btn-gold btn-lg px-4 shadow">
+                                    <i class="bi bi-list-ol me-2"></i> View Live Queue
+                                </a>
+                                <a href="{{ url_for('officer.dashboard') }}" class="btn btn-outline-light btn-lg px-4">
+                                    <i class="bi bi-speedometer2 me-2"></i> Officer Dashboard
+                                </a>
+                            {% elif current_role == 'Admin' %}
+                                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-gold btn-lg px-4 shadow">
+                                    <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Live Platform Statistics -->
+    <div class="row g-3 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="card-stat">
+                <div class="stat-icon stat-green">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-success">{{ total_farmers }}</h3>
+                    <div class="small text-muted fw-semibold">Registered Farmers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat">
+                <div class="stat-icon stat-gold">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-warning">{{ total_centers }}</h3>
+                    <div class="small text-muted fw-semibold">Procurement Centers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat">
+                <div class="stat-icon stat-blue">
+                    <i class="bi bi-ticket-detailed-fill"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-primary">{{ total_tokens }}</h3>
+                    <div class="small text-muted fw-semibold">Digital Tokens Issued</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card-stat">
+                <div class="stat-icon stat-purple">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold mb-0 text-purple">{{ completed_tokens }}</h3>
+                    <div class="small text-muted fw-semibold">Procurements Done</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Problem & Solution Section -->
+    <div class="row g-4 align-items-stretch mb-5">
+        <div class="col-lg-6">
+            <div class="card-custom h-100 p-4 border-start border-4 border-danger bg-white">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-danger-subtle text-danger p-3 rounded-circle fs-4">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-danger">The Problem</h4>
+                        <div class="text-muted small">Physical Overcrowding & Uncertainty</div>
+                    </div>
+                </div>
+                <p class="lead fs-6 text-secondary">
+                    Farmers waste many hours waiting in physical queues at procurement centers with loaded tractor trolleys under the harsh sun, suffering delays, traffic jams, and uncertainty about grain intake.
+                </p>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2 text-danger-emphasis"><i class="bi bi-x-circle-fill text-danger me-2"></i> Unpredictable 8–14 hour physical queues at mandis.</li>
+                    <li class="mb-2 text-danger-emphasis"><i class="bi bi-x-circle-fill text-danger me-2"></i> Middlemen exploitation and lack of transparent scheduling.</li>
+                    <li class="text-danger-emphasis"><i class="bi bi-x-circle-fill text-danger me-2"></i> Delay in payment disbursement and crop weight inspection.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-custom h-100 p-4 border-start border-4 border-success bg-white">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-success-subtle text-success p-3 rounded-circle fs-4">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1 text-success">The Kisan Setu Solution</h4>
+                        <div class="text-muted small">Smart Slot Booking & Digital Tokens</div>
+                    </div>
+                </div>
+                <p class="lead fs-6 text-secondary">
+                    Book a time slot, receive a digital token, and track procurement status online. Arrive only when your turn comes, experience fast-track intake, and receive direct payments seamlessly.
+                </p>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2 text-success"><i class="bi bi-check2-circle text-success me-2"></i> Pre-booked 2-hour procurement time slots with capacity limits.</li>
+                    <li class="mb-2 text-success"><i class="bi bi-check2-circle text-success me-2"></i> QR-coded Digital Token with live queue tracking (5 min/person estimate).</li>
+                    <li class="text-success"><i class="bi bi-check2-circle text-success me-2"></i> Direct digital status synchronization with Officer and Admin portals.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4-Step Farmer Workflow -->
+    <div class="card-custom p-4 p-lg-5 mb-5 bg-white">
+        <div class="text-center mb-4">
+            <h6 class="text-success fw-bold text-uppercase">Simple 4-Step Process</h6>
+            <h2 class="fw-bold">How Kisan Setu Works for Farmers</h2>
+            <p class="text-muted">Eliminating mandi congestion through modern digital slotting</p>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="mx-auto mb-3 bg-light-green text-white rounded-circle d-flex align-items-center justify-content-center fs-3 fw-bold" style="width: 64px; height: 64px; background-color: var(--medium-green);">
+                        1
+                    </div>
+                    <h5 class="fw-bold">1. Select Center & Slot</h5>
+                    <p class="small text-muted">Browse nearby procurement centers, check real-time available capacity, and pick a convenient date and time.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="mx-auto mb-3 bg-light-green text-white rounded-circle d-flex align-items-center justify-content-center fs-3 fw-bold" style="width: 64px; height: 64px; background-color: var(--medium-green);">
+                        2
+                    </div>
+                    <h5 class="fw-bold">2. Get Digital Token</h5>
+                    <p class="small text-muted">Instantly receive a verified e-Token (e.g. KS-00001) with your assigned queue position and print pass.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="mx-auto mb-3 bg-light-green text-white rounded-circle d-flex align-items-center justify-content-center fs-3 fw-bold" style="width: 64px; height: 64px; background-color: var(--medium-green);">
+                        3
+                    </div>
+                    <h5 class="fw-bold">3. Track Queue Live</h5>
+                    <p class="small text-muted">Monitor people ahead and estimated waiting time from home. Arrive at the center exactly when called.</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="p-3">
+                    <div class="mx-auto mb-3 bg-light-green text-white rounded-circle d-flex align-items-center justify-content-center fs-3 fw-bold" style="width: 64px; height: 64px; background-color: var(--medium-green);">
+                        4
+                    </div>
+                    <h5 class="fw-bold">4. Fast Intake & Payment</h5>
+                    <p class="small text-muted">Procurement Officer verifies grain quality, updates status to Completed, and payment status updates to Payment Done.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Procurement Centers Preview -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-0">Active Procurement Centers</h4>
+                <div class="text-muted small">Real-time procurement depots in Andhra Pradesh</div>
+            </div>
+            {% if is_logged_in and current_role == 'Farmer' %}
+                <a href="{{ url_for('farmer.procurement_centers') }}" class="btn btn-outline-green btn-sm">View All Centers</a>
+            {% endif %}
+        </div>
+
+        <div class="row g-3">
+            {% for center in centers %}
+                <div class="col-md-4">
+                    <div class="card-custom h-100 p-3 bg-white">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="fw-bold mb-0 text-success">{{ center.name }}</h5>
+                            <span class="badge bg-success-subtle text-success border border-success">{{ center.status }}</span>
+                        </div>
+                        <p class="small text-muted mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ center.location }}, {{ center.district }}</p>
+                        <p class="small mb-2"><i class="bi bi-clock-fill text-warning me-1"></i> Timings: <strong>{{ center.opening_time }} - {{ center.closing_time }}</strong></p>
+                        <p class="small mb-3"><i class="bi bi-telephone-fill text-primary me-1"></i> Contact: {{ center.contact }}</p>
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ center.name|urlencode }}+{{ center.location|urlencode }}" target="_blank" class="btn btn-outline-secondary btn-sm w-100">
+                            <i class="bi bi-map me-1"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Hackathon Demo Credentials Helper -->
+    <div class="card-custom p-4 mb-5 border border-warning" style="background-color: #fffbeb;">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-key-fill text-warning fs-4"></i>
+            <h5 class="fw-bold mb-0 text-dark">Pre-configured Demo Credentials for Evaluation</h5>
+        </div>
+        <p class="small text-muted mb-3">
+            Use the following credentials to experience the complete role-based workflow across Farmer, Officer, and Admin dashboards:
+        </p>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="bg-white p-3 rounded border">
+                    <span class="badge bg-success mb-2">Farmer Role</span>
+                    <div class="small"><strong>Email:</strong> <code>farmer@example.com</code></div>
+                    <div class="small"><strong>Password:</strong> <code>farmer123</code></div>
+                    <a href="{{ url_for('auth.login') }}?role=Farmer" class="btn btn-sm btn-outline-green mt-2 w-100">Login as Farmer</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white p-3 rounded border">
+                    <span class="badge bg-primary mb-2">Procurement Officer</span>
+                    <div class="small"><strong>Email:</strong> <code>officer@kisansetu.com</code></div>
+                    <div class="small"><strong>Password:</strong> <code>officer123</code></div>
+                    <a href="{{ url_for('auth.login') }}?role=Procurement+Officer" class="btn btn-sm btn-outline-primary mt-2 w-100">Login as Officer</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white p-3 rounded border">
+                    <span class="badge bg-dark mb-2">Admin Portal</span>
+                    <div class="small"><strong>Email:</strong> <code>admin@kisansetu.com</code></div>
+                    <div class="small"><strong>Password:</strong> <code>admin123</code></div>
+                    <a href="{{ url_for('auth.login') }}?role=Admin" class="btn btn-sm btn-outline-dark mt-2 w-100">Login as Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

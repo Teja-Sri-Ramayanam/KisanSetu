@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Procurement Officers - Admin | KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Bar with Home Navigation -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-person-badge-fill me-2"></i>Procurement Officers Directory</h3>
+            <p class="text-muted small mb-0">Total Mandi Staff: <strong>{{ officers|length }}</strong></p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Officers Table Card -->
+    <div class="card-custom bg-white shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-3">Officer Name</th>
+                        <th>Assigned Procurement Center</th>
+                        <th>Contact Mobile</th>
+                        <th>Email</th>
+                        <th>District / State</th>
+                        <th>Registered Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in officers %}
+                        <tr>
+                            <td class="ps-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-primary-subtle text-primary p-2 fw-bold" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                        {{ o.full_name[0] }}
+                                    </div>
+                                    <strong class="text-dark">{{ o.full_name }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-success-subtle text-success border border-success px-2 py-1">
+                                    <i class="bi bi-building me-1"></i>{{ o.center_name or 'Main Mandi' }}
+                                </span>
+                            </td>
+                            <td>{{ o.mobile }}</td>
+                            <td>{{ o.email }}</td>
+                            <td>{{ o.district }}, {{ o.state }}</td>
+                            <td>{{ o.created_at[:10] if o.created_at else '-' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

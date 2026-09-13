@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Register - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-7">
+            <!-- Navigation helper with prominent Home button -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-house-door-fill me-1"></i> HOME
+                </a>
+                <span class="text-muted small">New User Registration</span>
+            </div>
+
+            <div class="card-custom p-4 p-md-5 bg-white shadow">
+                <div class="text-center mb-4">
+                    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" width="56" height="56" class="mb-2">
+                    <h3 class="fw-bold text-success mb-1">Create Kisan Setu Account</h3>
+                    <p class="text-muted small">Select your designated role to register on the platform</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+                    <!-- Role Selection Option Cards -->
+                    <label class="form-label fw-bold mb-2 text-dark">
+                        <i class="bi bi-person-badge text-success me-1"></i> 1. Select Your Role:
+                    </label>
+                    <input type="hidden" name="role" id="selected_role_input" value="{{ request.args.get('role', 'Farmer') }}">
+
+                    <div class="row g-2 mb-4">
+                        <div class="col-4">
+                            <div class="role-card-option {% if request.args.get('role', 'Farmer') == 'Farmer' %}active{% endif %}" data-role="Farmer">
+                                <i class="bi bi-person-fill text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Farmer</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="role-card-option {% if request.args.get('role') == 'Procurement Officer' %}active{% endif %}" data-role="Procurement Officer">
+                                <i class="bi bi-shield-check text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Officer</span>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="role-card-option {% if request.args.get('role') == 'Admin' %}active{% endif %}" data-role="Admin">
+                                <i class="bi bi-sliders text-success d-block fs-3 mb-1"></i>
+                                <span class="small fw-bold">Admin</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Details -->
+                    <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-lines-fill me-1"></i> 2. Personal & Account Details
+                    </h6>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="full_name" class="form-label fw-semibold">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="e.g. Ramesh Kumar" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mobile" class="form-label fw-semibold">Mobile Number *</label>
+                            <input type="tel" class="form-control" id="mobile" name="mobile" placeholder="10-digit mobile number" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email Address *</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="password" class="form-label fw-semibold">Password *</label>
+                            <input type="password" class="form-control" id="password" name="password" minlength="6" placeholder="Min 6 characters" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="confirm_password" class="form-label fw-semibold">Confirm Password *</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6" placeholder="Repeat password" required>
+                        </div>
+                    </div>
+
+                    <!-- Location & Role-Specific Fields -->
+                    <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+                        <i class="bi bi-geo-alt-fill me-1"></i> 3. Location & Role Attributes
+                    </h6>
+
+                    <!-- Farmer Specific: Village -->
+                    <div class="mb-3 role-field-farmer">
+                        <label for="village" class="form-label fw-semibold">Village / Panchayat Name</label>
+                        <input type="text" class="form-control" id="village" name="village" placeholder="e.g. Pentapadu">
+                    </div>
+
+                    <!-- Officer Specific: Procurement Center Dropdown -->
+                    <div class="mb-3 role-field-officer" style="display: none;">
+                        <label for="assigned_center_id" class="form-label fw-semibold text-primary">
+                            <i class="bi bi-building me-1"></i> Assigned Procurement Center *
+                        </label>
+                        <select class="form-select" id="assigned_center_id" name="assigned_center_id">
+                            <option value="">-- Choose Assigned Center --</option>
+                            {% for c in centers %}
+                                <option value="{{ c.id }}">{{ c.name }} ({{ c.district }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Officers are mapped to their respective procurement mandi.</div>
+                    </div>
+
+                    <!-- Admin Specific: Demo Registration Key -->
+                    <div class="mb-3 role-field-admin" style="display: none;">
+                        <label for="admin_key" class="form-label fw-semibold text-danger">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Admin Registration Security Key *
+                        </label>
+                        <input type="password" class="form-control border-danger" id="admin_key" name="admin_key" placeholder="Enter demo admin key">
+                        <div class="form-text text-danger">
+                            Admin registration is restricted. Demo key for testing: <code>KISAN_ADMIN_2026</code>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="district" class="form-label fw-semibold">District *</label>
+                            <input type="text" class="form-control" id="district" name="district" value="West Godavari" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="state" class="form-label fw-semibold">State *</label>
+                            <input type="text" class="form-control" id="state" name="state" value="Andhra Pradesh" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-green w-100 py-2 fs-6 mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> Complete Registration
+                    </button>
+
+                    <div class="text-center pt-2 border-top">
+                        <p class="small text-muted mb-2">Already have an account on Kisan Setu?</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm px-4">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In Here
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

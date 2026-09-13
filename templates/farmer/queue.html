@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Live Queue Tracker - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Top Header & Home Navigation -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-people-fill me-2"></i>Live Queue Tracking</h3>
+            <p class="text-muted small mb-0">Real-time procurement center queue position and estimated waiting timeline</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+            {% if token %}
+                <button type="button" class="btn btn-primary-green btn-sm" onclick="refreshQueueStatus('{{ token.id }}')">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh Queue
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if token %}
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-8">
+                <!-- Queue Tracking Card -->
+                <div class="card-custom p-4 p-md-5 bg-white shadow">
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                        <div>
+                            <span class="text-muted small">Your Token Number</span>
+                            <h4 class="fw-bold text-success mb-0">{{ token.token_number }}</h4>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-muted small d-block">Current Status</span>
+                            <span id="queue-status-badge" class="badge-status {{ token.status|lower }}">{{ token.status }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="row g-3 text-center mb-4">
+                        <div class="col-sm-3 col-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small mb-1">Queue Position</div>
+                                <h3 class="fw-bold text-primary mb-0">#{{ token.queue_position }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small mb-1">People Ahead</div>
+                                <h3 class="fw-bold text-warning mb-0" id="queue-people-ahead">{{ people_ahead }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small mb-1">Current Processing</div>
+                                <h4 class="fw-bold text-dark mb-0 font-monospace" id="queue-proc-token">{{ current_processing_token or 'None' }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small mb-1">Center</div>
+                                <div class="fw-bold text-dark text-truncate small">{{ token.center_name }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estimated Waiting Time Highlight -->
+                    <div class="card p-3 border-warning bg-warning-subtle rounded-3 mb-4 text-center">
+                        <div class="small fw-semibold text-warning-emphasis text-uppercase">
+                            <i class="bi bi-hourglass-split me-1"></i> Estimated Waiting Time
+                        </div>
+                        <div class="display-6 fw-bold text-dark my-1" id="queue-est-time">
+                            {{ estimated_waiting_minutes }} mins
+                        </div>
+                        <div class="small text-muted">
+                            Calculation: 5 minutes &times; {{ people_ahead }} people ahead. 
+                            <em>(Note: Clearly estimated waiting time based on standard mandi turnover. Not an exact real-time prediction.)</em>
+                        </div>
+                    </div>
+
+                    <!-- Queue Progress Bar -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between small fw-semibold text-muted mb-1">
+                            <span>Queue Progress</span>
+                            <span>
+                                {% if token.status == 'Completed' %}
+                                    100% (Procurement Completed)
+                                {% elif token.status == 'Processing' %}
+                                    75% (Currently at Weighbridge / Unloading)
+                                {% elif people_ahead == 0 %}
+                                    50% (You are next in line!)
+                                {% else %}
+                                    In Waiting Queue
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 14px;">
+                            {% set pct = 100 if token.status == 'Completed' else (75 if token.status == 'Processing' else (50 if people_ahead == 0 else 25)) %}
+                            <div id="queue-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                 role="progressbar" style="width: {{ pct }}%;" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tips for Farmer -->
+                    <div class="alert alert-light border small text-secondary mb-0">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-lightbulb text-warning me-1"></i> Mandi Arrival Recommendation:</h6>
+                        Please arrive at <strong>{{ token.center_name }}</strong> 15 minutes before your time window. Keep your tractor/vehicle registration and digital token ready for the gate officer.
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-custom p-5 text-center bg-white shadow-sm">
+            <i class="bi bi-people display-3 text-muted mb-3"></i>
+            <h4 class="fw-bold">No Active Queue Record</h4>
+            <p class="text-muted small mb-4">You do not currently have a token in the queue. Book a procurement slot to obtain a token.</p>
+            <a href="{{ url_for('farmer.schedule') }}" class="btn btn-primary-green">
+                <i class="bi bi-calendar-plus me-1"></i> Book Slot Now
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/farmer.js') }}"></script>
+{% if token %}
+<script>
+    // Poll queue status every 15 seconds automatically
+    setInterval(() => {
+        refreshQueueStatus('{{ token.id }}');
+    }, 15000);
+</script>
+{% endif %}
+{% endblock %}

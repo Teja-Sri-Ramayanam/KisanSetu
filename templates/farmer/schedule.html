@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Procurement Schedule - KISAN SETU{% endblock %}
+
+{% block content %}
+<div class="container py-2">
+    <!-- Breadcrumb & Top Bar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h3 class="fw-bold mb-0 text-success"><i class="bi bi-calendar-check me-2"></i>Procurement Schedule & Slots</h3>
+            <p class="text-muted small mb-0">Browse real-time capacity and reserve your procurement time slot</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('auth.index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-house-door-fill me-1"></i> HOME
+            </a>
+            <a href="{{ url_for('farmer.dashboard') }}" class="btn btn-outline-green btn-sm">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    {% if has_active_token %}
+        <div class="alert alert-warning d-flex align-items-center mb-4 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+            <div>
+                <strong>Active Slot In Progress:</strong> You currently have an active booking 
+                <strong>({{ active_token.token_number }} - {{ active_token.slot_date }})</strong>.
+                You can view your token or wait until current procurement completes before booking another.
+            </div>
+            <a href="{{ url_for('farmer.token') }}" class="btn btn-warning btn-sm ms-auto text-nowrap">View My Token</a>
+        </div>
+    {% endif %}
+
+    <!-- Filter Card -->
+    <div class="card-custom p-3 mb-4 bg-white">
+        <form method="GET" action="{{ url_for('farmer.schedule') }}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label for="center_id" class="form-label fw-semibold small">Filter by Center</label>
+                <select class="form-select form-select-sm" id="center_id" name="center_id">
+                    <option value="">-- All Active Centers --</option>
+                    {% for c in centers %}
+                        <option value="{{ c.id }}" {% if selected_center == c.id %}selected{% endif %}>{{ c.name }} ({{ c.district }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="date" class="form-label fw-semibold small">Filter by Date</label>
+                <input type="date" class="form-control form-control-sm" id="date" name="date" value="{{ selected_date or '' }}">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-green btn-sm flex-fill">
+                    <i class="bi bi-funnel me-1"></i> Filter Slots
+                </button>
+                <a href="{{ url_for('farmer.schedule') }}" class="btn btn-outline-secondary btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Slots Table & Cards -->
+    {% if slots %}
+        <div class="card-custom bg-white overflow-hidden shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Center & Location</th>
+                            <th>Date</th>
+                            <th>Time Window</th>
+                            <th>Max Capacity</th>
+                            <th>Booked</th>
+                            <th>Available</th>
+                            <th>Slot Status</th>
+                            <th class="text-end pe-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in slots %}
+                            <tr>
+                                <td class="ps-3">
+                                    <div class="fw-bold text-success">{{ s.center_name }}</div>
+                                    <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i>{{ s.center_location }}</div>
+                                </td>
+                                <td>
+                                    <span class="fw-semibold">{{ s.slot_date }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-clock me-1 text-warning"></i>{{ s.start_time }} - {{ s.end_time }}
+                                    </span>
+                                </td>
+                                <td><span class="fw-semibold">{{ s.max_capacity }} farmers</span></td>
+                                <td>{{ s.booked_count }}</td>
+                                <td>
+                                    <span class="fw-bold {% if s.available_capacity > 5 %}text-success{% elif s.available_capacity > 0 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ s.available_capacity }} slots
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if s.status == 'Available' and s.available_capacity > 0 %}
+                                        <span class="badge bg-success-subtle text-success border border-success">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger">Full</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3">
+                                    {% if s.status == 'Available' and s.available_capacity > 0 and not has_active_token %}
+                                        <button type="button" class="btn btn-primary-green btn-sm" 
+                                                onclick="openBookingModal('{{ s.id }}', '{{ s.center_name }}', '{{ s.slot_date }}', '{{ s.start_time }}', '{{ s.end_time }}', '{{ s.available_capacity }}')">
+                                            <i class="bi bi-check2-circle me-1"></i> Select Slot
+                                        </button>
+                                    {% elif has_active_token %}
+                                        <button class="btn btn-outline-secondary btn-sm" disabled title="Already booked an active slot">
+                                            Slot Active
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-secondary btn-sm" disabled>
+                                            Full
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-custom p-5 text-center bg-white">
+            <i class="bi bi-calendar-x display-3 text-muted mb-3"></i>
+            <h5>No Procurement Slots Available</h5>
+            <p class="text-muted small">No available slots match your selected filters. Try choosing a different date or center.</p>
+            <a href="{{ url_for('farmer.schedule') }}" class="btn btn-outline-green btn-sm">Clear Filters</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Booking Confirmation Modal -->
+<div class="modal fade" id="bookingConfirmModal" tabindex="-1" aria-labelledby="bookingConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header modal-header-green">
+                <h5 class="modal-title fw-bold" id="bookingConfirmModalLabel">
+                    <i class="bi bi-check2-circle me-2"></i> Confirm Slot Booking
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="bookingModalForm" method="POST" action="">
+                <div class="modal-body p-4">
+                    <div class="alert alert-success bg-light-green-subtle border-0 mb-3">
+                        <div class="small text-muted">Selected Procurement Center:</div>
+                        <h6 class="fw-bold text-success mb-2" id="modal-center-name">Center</h6>
+                        <div class="row g-2 small">
+                            <div class="col-6">
+                                <strong>Date:</strong> <span id="modal-slot-date">-</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Time:</strong> <span id="modal-slot-time">-</span>
+                            </div>
+                            <div class="col-12">
+                                <strong>Available Capacity:</strong> <span id="modal-available-cap" class="text-success fw-bold">-</span> slots
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modal_crop_type" class="form-label fw-semibold small">Crop Type</label>
+                        <select class="form-select form-select-sm" id="modal_crop_type" name="crop_type">
+                            <option value="Paddy (Grade A)">Paddy (Grade A) - MSP ₹2320/q</option>
+                            <option value="Paddy (Common)" selected>Paddy (Common) - MSP ₹2300/q</option>
+                            <option value="Wheat">Wheat</option>
+                            <option value="Maize">Maize</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="modal_quantity" class="form-label fw-semibold small">Estimated Quantity (Quintals)</label>
+                        <input type="number" class="form-control form-control-sm" id="modal_quantity" name="estimated_quantity_quintals" value="50" min="1" max="500" step="1" required>
+                        <div class="form-text">Estimated load for tractor / vehicle entry.</div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="btnConfirmBooking" class="btn btn-primary-green btn-sm" onclick="confirmSlotBooking()">
+                        <i class="bi bi-ticket-perforated me-1"></i> Confirm & Generate Token
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/farmer.js') }}"></script>
+{% endblock %}
